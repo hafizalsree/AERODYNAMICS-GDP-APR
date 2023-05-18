@@ -51,4 +51,4 @@ for airfoilNo = 1:length(airfoilDB)
 end
 
 highest_MI = max(R)
-highest_MI_Index = find(R(:,1)==max(R))
+highest_MI_Airfoil = airfoilDB(find(R(:,1)==max(R))).naca
