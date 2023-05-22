@@ -68,6 +68,7 @@ V_cruise_I = V_cruise_T/sqrt(sigma); % True airspeed
 cl_design = WingLoading/(.5*rho*V_cruise_T^2); 
 cl_design = WingLoading/(.5*rho0*(V_cruise_T/sqrt(sigma))^2);
 cl_design_incom = cl_design/sqrt(1-M^2);
+cl_design_incom = cl_design_incom/.95/.9;
 
 % Round up to cl_design = 0.4
 % CL_design_rounded = ceil(cl_design*10)/10;
@@ -95,6 +96,8 @@ tolerance = 0.05; i=1; u=1;
 
 for airfoilNo = 1:length(airfoilDB)
     for reNo = 1:length(airfoilDB(1).reDB)
+
+% L/D Merit Index ----------------------------------------------------------
         try
             if isempty(airfoilDB(airfoilNo).reDB(reNo).clcd) || isempty(airfoilDB(airfoilNo).reDB(reNo).cd)
                 CD_Design_incom(airfoilNo, reNo) = NaN;
@@ -117,6 +120,25 @@ for airfoilNo = 1:length(airfoilDB)
         Compare(fieldNo+1).R = R;
         [Compare(fieldNo+1).highest_MI_index,~,~] = find(R==max(max(R)));
         Compare(fieldNo+1).highest_MI_Airfoil = airfoilDB(Compare(fieldNo).highest_MI_index+1).naca;
+
+% Structural Merit Index ----------------------------------------------------------
+
+        structural_tc(airfoilNo, reNo) = 1/sqrt(airfoilDB(airfoilNo).maxtc);
+        A2 = min(min([structural_tc]));
+        B2 = max(max([structural_tc]));
+        alpha2 = 10;
+        beta2 = 1;
+        if isempty(x)
+            R2 = NaN;
+        else
+            R2 = (beta2*(structural_tc-A2)-alpha2*(structural_tc-B2))/(B2-A2);
+        end
+
+        Compare(fieldNo+2).Field = 'structural_tc';
+        Compare(fieldNo+2).Value = B2;
+        Compare(fieldNo+2).R = R2;
+        [Compare(fieldNo+2).highest_MI_index,~,~] = find(R2(:,1)==max(max(R2)));
+        Compare(fieldNo+2).highest_MI_Airfoil = airfoilDB(Compare(fieldNo).highest_MI_index+2).naca;
 
         shortlisted2(u).naca = airfoilDB(airfoilNo).naca;
         shortlisted2(u).Re = airfoilDB(airfoilNo).reDB(reNo).re;
@@ -158,6 +180,7 @@ for airfoilNo = 1:length(airfoilDB)
             shortlisted(i).cldes = airfoilDB(airfoilNo).reDB(reNo).(Fields{1});
             shortlisted(i).maxtc = airfoilDB(airfoilNo).maxtc;
             shortlisted(i).structural_tc = 1/sqrt(airfoilDB(airfoilNo).maxtc);
+            shortlisted(i).MI_structural_tc = Compare(8).R(airfoilNo,reNo);
             shortlisted(i).L_D_Design = L_D_Design(airfoilNo, reNo);
             shortlisted(i).MI_L_D_Design =  Compare(7).R(airfoilNo,reNo);
             shortlisted(i).clMax = airfoilDB(airfoilNo).reDB(reNo).clMax;
@@ -165,14 +188,14 @@ for airfoilNo = 1:length(airfoilDB)
             shortlisted(i).aoaMax =  airfoilDB(airfoilNo).reDB(reNo).aoaMax;
             shortlisted(i).MI_aoaMax =  Compare(6).R(airfoilNo,reNo);
 
-            w1 = 0.45; % weightage for L/D
-            w2 = 0.1; % weightage for clMax
-            w3 = 0.45; % weightage for structure maxtc
+            w1 = 0.4; % weightage for L/D
+            w2 = 0.2; % weightage for clMax
+            w3 = 0.4; % weightage for structure maxtc
             w4 = 0.0; % weightage for aoaStall
 
             MI_L_D_Design = Compare(7).R(airfoilNo,reNo);
             MI_clMax = Compare(3).R(airfoilNo,reNo);
-            MI_structural = 1/sqrt(airfoilDB(airfoilNo).maxtc);
+            MI_structural = Compare(8).R(airfoilNo,reNo);
             MI_aoaMax = Compare(6).R(airfoilNo,reNo);
 
             MI_cumulative = MI_L_D_Design * w1 + MI_clMax * w2 + MI_structural * w3 + MI_aoaMax * w4;
