@@ -1,0 +1,138 @@
+clear
+clc
+close all
+
+load('airfoilDB.mat');
+
+%% Define alpha & beta
+
+alpha=1;
+beta=10;
+
+%% Field Type
+
+comparedFields = {'clDes','clcdDes','clMax','liftCurve','cm0'};
+
+%% Iterate through all airfoils and Re to find max & min
+
+for fieldNo = 1:length(comparedFields)
+    for reNo = 1:length(airfoilDB(1).reDB)
+        maxValues(reNo).(comparedFields{fieldNo}) = -inf;
+        minValues(reNo).(comparedFields{fieldNo}) = inf;
+        for airfoilNo = 1:length(airfoilDB)
+            if airfoilDB(airfoilNo).reDB(reNo).(comparedFields{fieldNo}) > maxValues(reNo).(comparedFields{fieldNo})
+                maxValues(reNo).(comparedFields{fieldNo}) = airfoilDB(airfoilNo).reDB(reNo).(comparedFields{fieldNo});
+                indexMax = [airfoilNo, reNo];
+            end
+            
+            if airfoilDB(airfoilNo).reDB(reNo).(comparedFields{fieldNo}) < minValues(reNo).(comparedFields{fieldNo})
+                minValues(reNo).(comparedFields{fieldNo}) = airfoilDB(airfoilNo).reDB(reNo).(comparedFields{fieldNo});
+                indexMin = [airfoilNo, reNo];
+            end
+        end
+    end
+end
+
+%% Find min, max and Calculate R for all
+
+for fieldNo = 1:length(comparedFields)
+    A = min([minValues.(comparedFields{fieldNo})]);
+    B = max([maxValues.(comparedFields{fieldNo})]);
+    for airfoilNo = 1:length(airfoilDB)
+        for reNo = 1:length(airfoilDB(1).reDB)
+            x = airfoilDB(airfoilNo).reDB(reNo).(comparedFields{fieldNo});
+            if isempty(x)
+                R(airfoilNo,reNo) = NaN;
+            else
+                R(airfoilNo,reNo) = (beta*(x-A)-alpha*(x-B))/(B-A);
+            end
+        end
+    end
+    Compare(fieldNo).Field = (comparedFields{fieldNo});
+    Compare(fieldNo).Value = B;
+    Compare(fieldNo).R = R;
+    Compare(fieldNo).highest_MI_index = find(R(:,1)==max(R));
+    Compare(fieldNo).highest_MI_Airfoil = airfoilDB(find(R(:,1)==max(R))).naca;
+end
+
+%% Cl, Cd, L/D design & CL max
+
+WingLoading = 3675;
+cruisealt = 25000;
+[T, a, P, rho] = atmosisa(convlength(cruisealt,'ft','m'));
+rho0 = 1.225; % Sea level
+M = 0.45; % Defined by Config
+V_cruise = a * M;
+cl_design = WingLoading/(.5*rho0*V_cruise^2);
+cl_design_incom = cl_design/sqrt(1-M^2);
+
+% Round up to cl_design = 0.4
+% CL_design_rounded = ceil(cl_design*10)/10;
+% CL_design_incom = ceil(cl_design_incom*10)/10
+% CL_design_rounded = CL_design_rounded/0.9/0.95 % A/C CL > 2D Wing CL > 3D Wing CL
+
+% Cd0
+C_D0 = 0.0201; % Defined by confiq
+e = .79; % Defined by confiq
+AR = 8.5; % Defined by Aero with intuition
+% C_D_design = C_D0 + CL_design_rounded^2/(pi*AR*e)
+
+% L/D
+% clcd = CL_design_rounded / C_D_design;
+% L_D_design = clcd
+
+% Cl_max
+CL_max = 1.5;
+
+
+%% Shortlist airfoils based on closest cldes
+
+Fields = {'clDes','clMax'};
+tolerance = 0.05; i=1; u=1;
+
+for airfoilNo = 1:length(airfoilDB)
+    for reNo = 1:length(airfoilDB(1).reDB)
+        try
+            if isempty(airfoilDB(airfoilNo).reDB(reNo).clcd) || isempty(airfoilDB(airfoilNo).reDB(reNo).cd)
+                CD_Design_incom(airfoilNo, reNo) = NaN;
+            else
+                CD_Design_incom(airfoilNo, reNo) = interp1(airfoilDB(airfoilNo).reDB(reNo).clcd,airfoilDB(airfoilNo).reDB(reNo).cd,cl_design_incom);
+            end
+            L_D_Design(airfoilNo, reNo) = cl_design / (CD_Design_incom(airfoilNo, reNo)*sqrt(1-M^2));
+            if isempty(x)
+                R(airfoilNo,reNo) = NaN;
+            else
+                R(airfoilNo,reNo) = (beta*(x-A)-alpha*(x-B))/(B-A);
+            end
+            Compare(fieldNo+1).Field = (comparedFields{fieldNo+1});
+            Compare(fieldNo+1).Value = B;
+            Compare(fieldNo+1).R = R;
+            Compare(fieldNo+1).highest_MI_index = find(R(:,1)==max(R));
+            Compare(fieldNo+1).highest_MI_Airfoil = airfoilDB(find(R(:,1)==max(R))).naca;
+        end
+        fieldNo = fieldNo + 1;
+        shortlisted2(u).naca = airfoilDB(airfoilNo).naca;
+        shortlisted2(u).Re = airfoilDB(airfoilNo).reDB(reNo).re;
+        shortlisted2(u).maxtc = airfoilDB(airfoilNo).maxtc;
+        shortlisted2(u).cldes = airfoilDB(airfoilNo).reDB(reNo).(Fields{1});
+        shortlisted2(u).L_D_Design = L_D_Design(airfoilNo, reNo);
+        shortlisted2(u).details = airfoilDB(airfoilNo);
+        u=u+1;
+        if abs(airfoilDB(airfoilNo).reDB(reNo).(Fields{1})-cl_design) < tolerance
+            shortlisted(i).index = airfoilNo;
+            shortlisted(i).naca = airfoilDB(airfoilNo).naca;
+            shortlisted(i).Re = airfoilDB(airfoilNo).reDB(reNo).re;
+            shortlisted(i).maxtc = airfoilDB(airfoilNo).maxtc;
+            shortlisted(i).structural_tc = 1/sqrt(airfoilDB(airfoilNo).maxtc);
+            shortlisted(i).cldes = airfoilDB(airfoilNo).reDB(reNo).(Fields{1});
+            shortlisted(i).L_D_Design = L_D_Design(airfoilNo, reNo);
+            shortlisted(i).MI_cldes =  Compare(3).R(airfoilNo,reNo);
+            shortlisted(i).details = airfoilDB(airfoilNo);
+            i=i+1;
+        end
+    end
+end
+
+shortlisted2 = struct2table(shortlisted2);
+shortlisted2 = sortrows(shortlisted2,'L_D_Design','descend');
+shortlisted2 = table2struct(shortlisted2);
