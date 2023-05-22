@@ -170,7 +170,7 @@ for airfoilNo = 1:length(airfoilDB)
             w3 = 0.45; % weightage for structure maxtc
             w4 = 0.0; % weightage for aoaStall
 
-            MI_L_D_Design = Compare(6).R(airfoilNo,reNo);
+            MI_L_D_Design = Compare(7).R(airfoilNo,reNo);
             MI_clMax = Compare(3).R(airfoilNo,reNo);
             MI_structural = 1/sqrt(airfoilDB(airfoilNo).maxtc);
             MI_aoaMax = Compare(6).R(airfoilNo,reNo);
