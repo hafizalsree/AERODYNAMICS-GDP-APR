@@ -174,18 +174,18 @@ for airfoilNo = 1:length(airfoilDB)
     for reNo = 1:1%length(airfoilDB(1).reDB)
         reNo = 3;
         if airfoilDB(airfoilNo).reDB(reNo).clMax>1.5 %&&abs(airfoilDB(airfoilNo).reDB(reNo).(Fields{1})-cl_design) < tolerance
-            shortlisted(i).index = airfoilNo;
+%             shortlisted(i).index = airfoilNo;
             shortlisted(i).naca = airfoilDB(airfoilNo).naca;
-            shortlisted(i).Re = airfoilDB(airfoilNo).reDB(reNo).re;
+%             shortlisted(i).Re = airfoilDB(airfoilNo).reDB(reNo).re;
             shortlisted(i).cldes = airfoilDB(airfoilNo).reDB(reNo).(Fields{1});
             shortlisted(i).maxtc = airfoilDB(airfoilNo).maxtc;
-            shortlisted(i).structural_tc = 1/sqrt(airfoilDB(airfoilNo).maxtc);
+%             shortlisted(i).structural_tc = 1/sqrt(airfoilDB(airfoilNo).maxtc);
             shortlisted(i).MI_structural_tc = Compare(8).R(airfoilNo,reNo);
-            shortlisted(i).L_D_Design = L_D_Design(airfoilNo, reNo);
+%             shortlisted(i).L_D_Design = L_D_Design(airfoilNo, reNo);
             shortlisted(i).MI_L_D_Design =  Compare(7).R(airfoilNo,reNo);
-            shortlisted(i).clMax = airfoilDB(airfoilNo).reDB(reNo).clMax;
+%             shortlisted(i).clMax = airfoilDB(airfoilNo).reDB(reNo).clMax;
             shortlisted(i).MI_clMax =  Compare(3).R(airfoilNo,reNo);
-            shortlisted(i).aoaMax =  airfoilDB(airfoilNo).reDB(reNo).aoaMax;
+%             shortlisted(i).aoaMax =  airfoilDB(airfoilNo).reDB(reNo).aoaMax;
             shortlisted(i).MI_aoaMax =  Compare(6).R(airfoilNo,reNo);
 
             w1 = 0.4; % weightage for L/D
