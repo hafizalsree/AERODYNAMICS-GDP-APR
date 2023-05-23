@@ -20,9 +20,9 @@ end
 
 % Calculate skin friction for either turbulent or laminar
 if strcmp (flow_state,'turbulent')
-    c_F=.455/((log10(Re)^2.58)*(1+.144*M^2)^.65);
+    cf=.455/((log10(Re)^2.58)*(1+.144*condition.M^2)^.65);
 elseif strcmp (flow_state,'laminar')
-    c_F=1.328/sqrt(Re);
+    cf=1.328/sqrt(Re);
 end
 
 end
