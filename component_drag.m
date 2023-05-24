@@ -2,7 +2,7 @@ function component_drag = component_drag(condition, nacelle, fuselage, wing, tai
 
 %% Nacelle
 % FF
-f_nacelle = nacelle.l_nacelle / nacelle.d_nacelle;
+f_nacelle = nacelle.length / nacelle.diameter;
 FF_nacelle = 1 + (0.35/f_nacelle);
 
 % Q
@@ -11,7 +11,7 @@ Q_nacelle = 1;
 component_nacelle = FF_nacelle * Q_nacelle;
 %% Fuselage
 % FF
-f_fuselage = fuselage.l_fuselage / fuselage.d_fuselage;
+f_fuselage = fuselage.length / fuselage.diameter;
 FF_fuselage = 1 + 60/f_fuselage^3 + f_fuselage/400;
 
 % Q
