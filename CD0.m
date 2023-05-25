@@ -1,7 +1,7 @@
 function CD0 = CD0(condition,tail,fuselage,nacelle,wing,Swet)
 
 FF_Q = component_drag(condition, nacelle, fuselage, wing, tail);
-cdmisc = miscDrag(nacelle,fuselage,wing)
+cdmisc = miscDrag(condition, nacelle,fuselage,wing);
 
 %% Nacelle
 cd_nacellelam = cf(condition,nacelle.length,'laminar') * FF_Q(1) * Swet(1)/wing.Sref;
@@ -37,7 +37,7 @@ cd_vtail = cd_vtaillam * lamRatio + cd_vtailtur * (1-lamRatio);
 
 %% Total
 
-CD0_total = 1.02*(cd_nacelle*2 + cd_fuselage + cd_wing + cd_vtail + cd_htail + cdmisc);%/wing.Sref;
+CD0_total = 1.02*(cd_nacelle*2 + cd_fuselage + cd_wing + cd_vtail + cd_htail + cdmisc);
 CD0 = [cd_nacelle*2 ; cd_fuselage ; cd_wing ; cd_vtail ; cd_htail ; cdmisc ; CD0_total];
 
 

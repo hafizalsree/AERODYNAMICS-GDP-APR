@@ -1,4 +1,4 @@
-function cdmiscDrag = miscDrag(nacelle,fuselage,wing)
+function cdmiscDrag = miscDrag(condition,nacelle,fuselage,wing)
 
 %% Undercarriage
 
@@ -18,16 +18,16 @@ cdwmnacelle = 0.1*sigma*nacelle_area/wing.Sref; % 0.1 is for feathered prop
 
 %% Fuselage Upsweep
 
-% cdupsweep = 3.83*(pi*fuselage.diameter^2)*(upsweep^(2.5))/(4*wing.Sref);
-
+cdupsweep = 3.83*(pi*fuselage.diameter^2)*(deg2rad(fuselage.upsweep)^(2.5))/(4*wing.Sref);
 
 %% Base Drag (rear of fuselage)
 
+cdbase = (0.139 + 0.419 * (condition.M - 0.161)^2) * (pi * (fuselage.assDiameter/2)^2)/wing.Sref;
 
 %% Total
 
 % cdmiscDrag = cduc + cdhld + cdwnacelle + cdupsweep;
-cdmiscDrag = cdwmnacelle;
+cdmiscDrag = cdwmnacelle + cdbase + cdupsweep;
 % cdmiscDrag = 0;
 
 end
