@@ -201,6 +201,7 @@ for airfoilNo = 1:length(airfoilDB)
             MI_cumulative = MI_L_D_Design * w1 + MI_clMax * w2 + MI_structural * w3 + MI_aoaMax * w4;
             shortlisted(i).MI_cumulative = MI_cumulative;
             shortlisted(i).details = airfoilDB(airfoilNo);
+            shortlisted(i).cm0 = airfoilDB(i).reDB.cm0;  
 
             i=i+1;
         end
