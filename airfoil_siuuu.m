@@ -67,6 +67,7 @@ V_cruise_T = a * M; % True airspeed
 V_cruise_I = V_cruise_T/sqrt(sigma); % True airspeed
 cl_design = WingLoading/(.5*rho*V_cruise_T^2); 
 cl_design = WingLoading/(.5*rho0*(V_cruise_T/sqrt(sigma))^2);
+cl_design_com = cl_design/.9/.95; % 0.9 for 3d, 0.95 for other ac parts
 cl_design_incom = cl_design/sqrt(1-M^2);
 cl_design_incom = cl_design_incom/.95/.9;
 
