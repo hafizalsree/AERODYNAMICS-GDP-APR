@@ -34,6 +34,11 @@ cd_vtailtur = cf(condition,tail.meanChord,'turbulent') * FF_Q(4) * Swet(4)/wing.
 lamRatio = 0.1;
 cd_vtail = cd_vtaillam * lamRatio + cd_vtailtur * (1-lamRatio);
 
+%% External Fuel Tanks
+cd_nacellelam = cf(condition,nacelle.length,'laminar') * FF_Q(1) * Swet(1)/wing.Sref;
+cd_nacelletur = cf(condition,nacelle.length,'turbulent') * FF_Q(1) * Swet(1)/wing.Sref;
+lamRatio = 0.0; % Turbulent bcoz propeller is infront
+cd_nacelle = cd_nacellelam * lamRatio + cd_nacelletur * (1-lamRatio);
 
 %% Total
 

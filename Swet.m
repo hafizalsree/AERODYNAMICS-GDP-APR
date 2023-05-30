@@ -27,6 +27,12 @@ nacelled = nacelle.diameter;
 
 sNacelle = (pi*nacelled*nacellel);
 
+%% External Fuel Tanks
+nacellel = nacelle.length;
+nacelled = nacelle.diameter;
+
+sNacelle = (pi*nacelled*nacellel);
+
 %% Total
 Swet = [sNacelle;sFuselage;sWings;svTail;shTail];
 
