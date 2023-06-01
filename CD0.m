@@ -1,6 +1,6 @@
-function CD0 = CD0(condition,tail,fuselage,nacelle,wing,Swet)
+function CD0 = CD0(condition,vtail,htail,fuselage,nacelle,wing,Swet)
 
-FF_Q = component_drag(condition, nacelle, fuselage, wing, tail);
+FF_Q = component_drag(condition, nacelle, fuselage, wing, vtail,htail);
 cdmisc = miscDrag(condition, nacelle,fuselage,wing);
 
 %% Nacelle
@@ -23,14 +23,14 @@ cd_wing = cd_winglam * lamRatio + cd_wingtur * (1-lamRatio);
 
 
 %% Horizontal Tail
-cd_htaillam = cf(condition,tail.meanChord,'laminar') * FF_Q(4) * Swet(4)/wing.Sref;
-cd_htailtur = cf(condition,tail.meanChord,'turbulent') * FF_Q(4) * Swet(4)/wing.Sref;
+cd_htaillam = cf(condition,htail.meanChord,'laminar') * FF_Q(4) * Swet(4)/wing.Sref;
+cd_htailtur = cf(condition,htail.meanChord,'turbulent') * FF_Q(4) * Swet(4)/wing.Sref;
 lamRatio = 0.3;
 cd_htail = cd_htaillam * lamRatio + cd_htailtur * (1-lamRatio);
 
 %% Vertical Tail
-cd_vtaillam = cf(condition,tail.meanChord,'laminar') * FF_Q(4) * Swet(4)/wing.Sref;
-cd_vtailtur = cf(condition,tail.meanChord,'turbulent') * FF_Q(4) * Swet(4)/wing.Sref;
+cd_vtaillam = cf(condition,vtail.meanChord,'laminar') * FF_Q(4) * Swet(4)/wing.Sref;
+cd_vtailtur = cf(condition,vtail.meanChord,'turbulent') * FF_Q(4) * Swet(4)/wing.Sref;
 lamRatio = 0.1;
 cd_vtail = cd_vtaillam * lamRatio + cd_vtailtur * (1-lamRatio);
 

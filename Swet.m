@@ -1,4 +1,4 @@
-function Swet = Swet(nacelle,fuselage,wing,tail)
+function Swet = Swet(nacelle,fuselage,wing,vtail,htail)
 
 %% Fuselage
 fradius = fuselage.diameter/2;
@@ -18,8 +18,8 @@ areablocked = wingstart*(wing.rootChord+wingchord)/2;
 sWings = 2.05*(wing.Sref-areablocked*2);
 
 %% Tailplane
-svTail = tail.area*2.05; % From Errikos excel
-shTail = tail.area*2.05; % From Errikos excel
+svTail = vtail.area*2.05; % From Errikos excel
+shTail = htail.area*2.05; % From Errikos excel
 
 %% Nacelle
 nacellel = nacelle.length;
