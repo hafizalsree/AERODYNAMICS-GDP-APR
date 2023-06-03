@@ -1,4 +1,4 @@
-function Swet = Swet(nacelle,fuselage,wing,vtail,htail)
+function Swet = Swet(nacelle,fuselage,wing,vtail,htail,strut)
 
 %% Fuselage
 fradius = fuselage.diameter/2;
@@ -27,13 +27,10 @@ nacelled = nacelle.diameter;
 
 sNacelle = (pi*nacelled*nacellel);
 
-%% External Fuel Tanks
-nacellel = nacelle.length;
-nacelled = nacelle.diameter;
-
-sNacelle = (pi*nacelled*nacellel);
+%% Strut for Wing
+sstrut = 2.05*(strut.area);
 
 %% Total
-Swet = [sNacelle;sFuselage;sWings;svTail;shTail];
+Swet = [sNacelle;sFuselage;sWings;shTail;svTail;sstrut];
 
 end

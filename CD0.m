@@ -1,6 +1,6 @@
-function CD0 = CD0(condition,vtail,htail,fuselage,nacelle,wing,Swet)
+function CD0 = CD0(condition,vtail,htail,fuselage,nacelle,wing,strut,Swet)
 
-FF_Q = component_drag(condition, nacelle, fuselage, wing, vtail,htail);
+FF_Q = component_drag(condition, nacelle, fuselage, wing, vtail,htail,strut);
 cdmisc = miscDrag(condition, nacelle,fuselage,wing);
 
 %% Nacelle
@@ -29,21 +29,24 @@ lamRatio = 0.3;
 cd_htail = cd_htaillam * lamRatio + cd_htailtur * (1-lamRatio);
 
 %% Vertical Tail
-cd_vtaillam = cf(condition,vtail.meanChord,'laminar') * FF_Q(4) * Swet(4)/wing.Sref;
-cd_vtailtur = cf(condition,vtail.meanChord,'turbulent') * FF_Q(4) * Swet(4)/wing.Sref;
+cd_vtaillam = cf(condition,vtail.meanChord,'laminar') * FF_Q(5) * Swet(5)/wing.Sref;
+cd_vtailtur = cf(condition,vtail.meanChord,'turbulent') * FF_Q(5) * Swet(5)/wing.Sref;
 lamRatio = 0.1;
 cd_vtail = cd_vtaillam * lamRatio + cd_vtailtur * (1-lamRatio);
 
-%% External Fuel Tanks
-cd_nacellelam = cf(condition,nacelle.length,'laminar') * FF_Q(1) * Swet(1)/wing.Sref;
-cd_nacelletur = cf(condition,nacelle.length,'turbulent') * FF_Q(1) * Swet(1)/wing.Sref;
-lamRatio = 0.0; % Turbulent bcoz propeller is infront
-cd_nacelle = cd_nacellelam * lamRatio + cd_nacelletur * (1-lamRatio);
+%% Strut
+if strut.area == 0
+    cd_strut = 0;
+else
+    cd_strutlam = cf(condition,strut.meanChord,'laminar') * FF_Q(6) * Swet(6)/wing.Sref;
+    cd_struttur = cf(condition,strut.meanChord,'turbulent') * FF_Q(6) * Swet(6)/wing.Sref;
+    lamRatio = 0.5;
+    cd_strut = cd_strutlam * lamRatio + cd_struttur * (1-lamRatio);
+end
 
 %% Total
 
-CD0_total = 1.02*(cd_nacelle*2 + cd_fuselage + cd_wing + cd_vtail + cd_htail + cdmisc);
-CD0 = [cd_nacelle*2 ; cd_fuselage ; cd_wing ; cd_vtail ; cd_htail ; cdmisc ; CD0_total];
-
+CD0_total = 1.02*(cd_nacelle*2 + cd_fuselage + cd_wing + cd_vtail + cd_htail + cdmisc + cd_strut);
+CD0 = [cd_nacelle*2 ; cd_fuselage ; cd_wing ; cd_vtail ; cd_htail ; cd_strut ; cdmisc ; CD0_total];
 
 end
