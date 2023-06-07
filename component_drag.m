@@ -1,4 +1,4 @@
-function component_drag = component_drag(condition, nacelle, fuselage, wing, vtail,htail)
+function component_drag = component_drag(condition, nacelle, fuselage, wing, vtail,htail,strut)
 
 %% Nacelle
 % FF
@@ -44,8 +44,15 @@ FF_htail = (1 + .6/(htail.xtcMax)*htail.tc + 100*(htail.tc)^4)*(1.34*(condition.
 Q_htail = 1.05;
 
 component_htail = FF_htail * Q_htail;
+%% Strut
+% FF
+FF_strut = (1 + .6/(strut.xtcMax)*strut.tc + 100*(strut.tc)^4)*(1.34*(condition.M^.18)*cosd(strut.sweep)^.28);
 
+% Q
+Q_strut = 1.02; % 
+
+component_strut = FF_strut * Q_strut;
 %% Total
-component_drag = [component_nacelle;component_fuselage;component_wing;component_vtail;component_htail];
+component_drag = [component_nacelle;component_fuselage;component_wing;component_htail;component_vtail;component_strut];
 
 end
